@@ -1,0 +1,58 @@
+# .gitignore
+
+# General
+.DS_Store
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pytest
+.cache/
+.pytest_cache/
+
+# Python-toolkit for Jupyter notebook
+.metadata/
+*.metajson
+
+# IDEs
+.idea/
+*.iml
+
+# EMACS
+*~
+
+# OSX
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# pipenv
+# If you're using Pipenv to manage your project, add the following:
+# Use .env to store your project's environment variables, for example:
+# .env
+# Use .venv for the pipenv's virtual environment, for example:
+# .venv
+
+# The remaining lines can be kept or modified to fit your needs.
+
+# System files
+# It is recommended to exclude your system's temp files to avoid potential conflicts.
+# The exact command may vary based on your system, here is an example:
+# For Unix-based systems, use:
+*.swp
+
+# For Windows systems, use:
+*.tmp
+*.temp
+*.log
+*.err
+*.bak
+*.orig
+
+# Visual Studio Code files
+.vscode/
