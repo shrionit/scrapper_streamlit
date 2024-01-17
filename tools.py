@@ -12,7 +12,6 @@ def create_download_link(val, filename):
 def getDownloadURI(text, fileName="AnalysisReport.pdf"):
     pdf = FPDF(orientation="P", unit="mm", format="A4")
     pdf.add_page()
-    pdf.set_right_margin(3)
     pdf.set_font(family="Arial", size=16)
     pdf.set_font_size(24)
     pdf.cell(200, 10, "Analysis Report", ln=1, align="C")
