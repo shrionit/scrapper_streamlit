@@ -6,6 +6,7 @@
 *.pyo
 *.pyd
 __pycache__/
+streamlit_env
 
 # Jupyter Notebook
 .ipynb_checkpoints

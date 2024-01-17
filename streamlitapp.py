@@ -1,14 +1,21 @@
 import streamlit as st
-from components.graph import generateGraph
-
-from components.list import companyList, getPostCount
+from components.list import companyList
 from scrapperapi import getCompanys, getInsights, getPrompt
-from server import generateReportFromCompanyData
+from tools import getDownloadURI, prepareResponse
 
 
 def get(key):
     if key in st.session_state:
-        return st.session_state[key]
+        value = st.session_state[key]
+
+        # Check if the value is a streamlit element
+        if isinstance(value, st.delta_generator.DeltaGenerator):
+            # If it's a text_area, extract the value
+            if value.dg_type == "text_area":
+                return value.new_element.widget.value
+
+        return value
+
     return None
 
 
@@ -17,6 +24,8 @@ def set(key, value):
 
 
 def handle_generate(*, companyId=0, limit=0, offset=0, newPrompt=None):
+    if "response" in st.session_state:
+        del st.session_state["response"]
     report = getInsights(
         companyId=companyId, limit=limit, offset=offset, newPrompt=newPrompt
     )
@@ -24,18 +33,24 @@ def handle_generate(*, companyId=0, limit=0, offset=0, newPrompt=None):
 
 
 st.set_page_config(layout="wide")
-st.session_state["basePrompt"] = getPrompt()
+
 # LEFT SIDE
 side, content = st.columns([10, 10], gap="medium")
-selectedCompany = getCompanys(side)
+selectedCompany = companyList(side)
 set("company", selectedCompany)
 side.write(f"Total Posts: {selectedCompany.postCount}")
 limit, offset = side.columns([5, 5])
 limit.number_input(label="Limit", min_value=5, max_value=20, value=10, key="limit")
 offset.number_input(label="Offset", min_value=0, value=0, key="offset")
+
+# Use st.text_area directly and set the value in the session state
 side.text_area(
-    label="Prompt", value=st.session_state.basePrompt, height=200, key="basePrompt"
+    label="Prompt",
+    height=200,
+    value=getPrompt()["prompt"],
+    key="basePrompt",
 )
+
 side.button(
     label="Generate",
     on_click=lambda: handle_generate(
@@ -48,8 +63,18 @@ side.button(
 )
 
 # RIGHT SIDE
-content.header("Analysis Report")
-content.text(f"Company: {get('company').Name}")
+contenttitle, downloadbutton = content.columns([7, 3])
+contenttitle.header("Analysis Report")
+downloadbutton.markdown("")
+
+if "response" in st.session_state:
+    downloadbutton.link_button(
+        label="Download PDF",
+        url=getDownloadURI(prepareResponse(st)),
+    )
+
+content.markdown(f"Company: **{get('company').Name}**")
 content.divider()
+
 if "response" in st.session_state:
     content.write(st.session_state["response"])
